@@ -1,6 +1,6 @@
 <template>
   <footer class="glass-container footer">
-    <p>© 2024 Vue Todo App | Glassmorphism Style</p>
+    <p>© 2025 TaskFlow | Glassmorphism Style | henrisp</p>
   </footer>
 </template>
 

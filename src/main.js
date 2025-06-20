@@ -9,7 +9,7 @@ initGlassEffects();
 const loadFont = () => {
   const link = document.createElement("link");
   link.href =
-    "https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap";
+    "https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500,400&display=swap";
   link.rel = "stylesheet";
   document.head.appendChild(link);
 

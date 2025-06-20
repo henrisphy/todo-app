@@ -1,72 +1,89 @@
 <template>
-  <div class="app-container">
+  <div class="app">
     <!-- Header -->
-    <header class="glass-header">
-      <button @click="toggleNavbar" class="hamburger-button">
-        <span></span>
-        <span></span>
-        <span></span>
+    <header class="app-header glass-header">
+      <button
+        @click="toggleNavbar"
+        class="menu-toggle"
+        :class="{ active: navbarActive }"
+      >
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </button>
       <h1 class="app-title">✨ TaskFlow ✨</h1>
     </header>
-    <!-- Navbar Toggle Button -->
-    <button @click="toggleNavbar" class="navbar-toggle glass-panel">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </button>
 
-    <!-- Navbar -->
-    <nav class="glass-navbar" :class="{ active: navbarActive }">
-      <div class="user-controls">
-        <h3>User Dashboard</h3>
-        <input
-          v-model="newUser"
-          placeholder="New username"
-          @keyup.enter="addUser"
-          class="glass-input"
-        />
-        <button @click="addUser" class="glass-button">Add User</button>
+    <!-- Navigation -->
+    <nav class="app-nav" :class="{ active: navbarActive }">
+      <div class="user-management">
+        <h3 class="section-title" style="margin-left: 10px">User Dashboard</h3>
 
-        <div class="user-list">
-          <div
-            v-for="(user, index) in users"
-            :key="index"
-            class="user-item glass-panel"
-            :class="{ active: currentUser === user }"
-            @click="selectUser(user)"
-          >
-            {{ user }}
-            <button @click.stop="deleteUser(index)" class="delete-button">
-              ×
-            </button>
+        <div class="user-input-group">
+          <input
+            v-model="newUser"
+            placeholder="Enter username"
+            @keyup.enter="addUser"
+            class="user-input"
+          />
+          <button @click="addUser" class="add-user-btn">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="user-list-container">
+          <div class="user-list">
+            <div
+              v-for="(user, index) in users"
+              :key="index"
+              class="user-item"
+              :class="{ active: currentUser === user }"
+              @click="selectUser(user)"
+            >
+              <span class="user-name">{{ user }}</span>
+              <button @click.stop="deleteUser(index)" class="delete-user-btn">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="content" :class="{ shifted: navbarActive }">
-      <div v-if="currentUser" class="user-tasks">
-        <h2>{{ currentUser }}'s Tasks</h2>
-        <AddTask @add-task="addTask" />
-        <TaskList :tasks="userTasks" @delete-task="deleteTask" />
-      </div>
+    <main class="app-main" :class="{ shifted: navbarActive }">
+      <div class="content-wrapper">
+        <div v-if="currentUser" class="task-management">
+          <div class="user-header">
+            <h2 class="user-greeting">
+              <span class="welcome">Welcome,</span>
+              <span class="username">{{ currentUser }}</span>
+            </h2>
+            <p class="task-count">
+              {{ userTasks.length }}
+              {{ userTasks.length === 1 ? "task" : "tasks" }}
+            </p>
+          </div>
 
-      <div v-else class="no-user-selected glass-panel">
-        <p>Please select or create a user to manage tasks</p>
+          <AddTask @add-task="addTask" />
+          <TaskList :tasks="userTasks" @delete-task="deleteTask" />
+        </div>
+
+        <div v-else class="no-user-selected">
+          <svg class="empty-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
+            />
+          </svg>
+          <h3>No User Selected</h3>
+          <p>Please select or create a user to manage tasks</p>
+        </div>
       </div>
 
       <Footer />
@@ -139,119 +156,71 @@ export default {
 };
 </script>
 
-<style scoped>
-.app-container {
+<style>
+/* Base Styles */
+:root {
+  --primary: #764ba2;
+  --secondary: #667eea;
+  --text-light: rgba(255, 255, 255, 0.9);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  min-height: 100vh;
+}
+
+/* Glassmorphism Effect */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* App Layout */
+.app {
   display: flex;
   min-height: 100vh;
   position: relative;
 }
 
-.navbar-toggle {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  color: white;
-}
-
-.glass-navbar {
-  position: fixed;
-  top: 0;
-  left: -300px;
-  width: 280px;
-  height: 100vh;
-  padding: 20px;
-  z-index: 90;
-  transition: all 0.3s ease;
-}
-
-.glass-navbar.active {
-  left: 0;
-}
-
-.content {
-  flex: 1;
-  padding: 80px 20px 20px;
-  transition: all 0.3s ease;
-}
-
-.content.shifted {
-  margin-left: 280px;
-}
-
-.user-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 100%;
-}
-
-.user-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-  flex-grow: 1;
-}
-
-.user-item {
-  padding: 12px 15px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.user-item.active {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.delete-button {
-  background: transparent;
-  border: none;
-  font-size: 1.2em;
-  padding: 0 5px;
-}
-
-.no-user-selected {
-  padding: 40px;
-  text-align: center;
-  margin-top: 40px;
-}
-/* Gaya Header Modern */
-.glass-header {
+/* Header Styles */
+.app-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px 20px;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  z-index: 80;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 }
 
 .app-title {
   margin: 0 auto;
-  font-weight: 500;
   font-size: 1.5rem;
-  background: linear-gradient(90deg, #ffffff, #e0e0e0);
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Gaya Hamburger Button */
-.hamburger-button {
+/* Menu Toggle Button */
+.menu-toggle {
   width: 40px;
   height: 40px;
   display: flex;
@@ -260,45 +229,281 @@ export default {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 5px;
-  z-index: 100;
+  padding: 0;
+  z-index: 110;
 }
 
-.hamburger-button span {
+.menu-toggle .bar {
   display: block;
   width: 100%;
   height: 3px;
-  background: white;
+  background: var(--primary);
   border-radius: 3px;
   transition: all 0.3s ease;
 }
 
-.hamburger-button:hover span {
-  background: #c3cfe2;
+.menu-toggle.active .bar:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
 }
 
-/* Efek animasi saat navbar aktif */
-.hamburger-button.active span:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.hamburger-button.active span:nth-child(2) {
+.menu-toggle.active .bar:nth-child(2) {
   opacity: 0;
 }
 
-.hamburger-button.active span:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
+.menu-toggle.active .bar:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
 }
+
+/* Navigation Styles */
+.app-nav {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  padding: 1.5rem;
+  z-index: 90;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+}
+
+.app-nav.active {
+  left: 0;
+}
+
+.user-management {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+.user-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.user-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.user-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.add-user-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-user-btn:hover {
+  transform: scale(1.05);
+}
+
+.add-user-btn .icon {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.user-list-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-item {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-item.active {
+  background: linear-gradient(
+    135deg,
+    rgba(118, 75, 162, 0.3),
+    rgba(102, 126, 234, 0.3)
+  );
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.delete-user-btn {
+  background: transparent;
+  border: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-user-btn:hover {
+  background: rgba(255, 99, 71, 0.2);
+}
+
+.delete-user-btn .icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.delete-user-btn:hover .icon {
+  fill: tomato;
+}
+
+/* Main Content Styles */
+.app-main {
+  flex: 1;
+  padding: 5rem 1rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.app-main.shifted {
+  margin-left: 280px;
+}
+
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.task-management {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.user-greeting {
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.username {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.task-count {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* No User Selected State */
+.no-user-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  border-radius: 12px;
+  gap: 1rem;
+}
+
+.no-user-selected h3 {
+  font-size: 1.25rem;
+  color: var(--text-light);
+}
+
+.no-user-selected p {
+  color: var(--text-muted);
+  max-width: 300px;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  fill: var(--text-muted);
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .content.shifted {
+  .app-main.shifted {
     margin-left: 0;
-    opacity: 0.3;
-    pointer-events: none;
+    transform: translateX(280px);
+    overflow: hidden;
   }
 
-  .glass-navbar {
-    width: 80vw;
-    left: -85vw;
+  .app-nav {
+    width: 280px;
+    left: -280px;
+  }
+
+  .app-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 4.5rem 0.75rem 2rem;
+  }
+
+  .user-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .username {
+    font-size: 1.25rem;
   }
 }
 </style>

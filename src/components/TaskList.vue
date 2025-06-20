@@ -56,7 +56,7 @@ export default {
 .delete-button {
   background: transparent;
   border: none;
-  color: white;
+  color: #764ba2;
   font-size: 1.5em;
   cursor: pointer;
   opacity: 0.7;
